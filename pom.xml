@@ -5,10 +5,10 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org-treathunter</groupId>
-  <artifactId>java-university-7th-semester-ip-lab1-json-file-autontification-app</artifactId>
+  <artifactId>java-university-7th-semester-ip-lab3-ecb-encrypted-json-file-autontification-app</artifactId>
   <version>0.0.1-SNAPSHOT</version>
 
-  <name>java-university-7th-semester-ip-lab1-json-file-autontification-app</name>
+  <name>java-university-7th-semester-ip-lab3-ecb-encrypted-json-file-autontification-app</name>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
