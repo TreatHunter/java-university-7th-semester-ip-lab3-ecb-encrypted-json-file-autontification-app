@@ -24,6 +24,7 @@ public class JsonFileStorageTest
 		Path path = Paths.get(JsonFileStorage.DataBasePath);
 		Files.deleteIfExists(path);
 		db = new JsonFileStorage();
+		db.createDatabase("tester");
 	}
 	
 	@Test
