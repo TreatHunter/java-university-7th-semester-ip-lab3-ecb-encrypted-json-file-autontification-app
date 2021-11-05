@@ -5,11 +5,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org_treathunter.java_university_7th_semester_ip_lab1_json_file_autontification_app.ecb.encryption.AES;
 
 public class JsonFileStorage 
 {
@@ -17,28 +18,62 @@ public class JsonFileStorage
 	
 	private ObjectMapper mapper = new ObjectMapper();
 	private Path path = Paths.get(DataBasePath);
+	private boolean existDatabase;
 	
-	public JsonFileStorage() throws IOException 
+	public JsonFileStorage() throws Exception 
 	{
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-		if(!Files.exists(path))
+		if(Files.exists(path))
 		{
-			path = Files.createFile(path);
-		    List<User> usersList = Arrays.asList(
-					new User("ADMIN","",User.Role.admin,false,false)
-		    );
-		    mapper.writeValue(path.toFile(), usersList);
+			existDatabase = true;
+			return;
 		}
+		existDatabase = false;
+	}
+	
+	public boolean isExistDatabase()
+	{
+		return existDatabase;
+	}
+	
+	public void setKey(String key) 
+	{
+		AES.setKey(key);
+	}
+	
+	public void createDatabase(String key) throws Exception
+	{
+		AES.setKey(key);
+		path = Files.createFile(path);
+	    ArrayList<User> usersList = new ArrayList<User>();
+	    usersList.add(new User("ADMIN","",User.Role.admin,false,false));
+	    setUsers(usersList);
+	    existDatabase = true;
 	}
 	
 	public ArrayList<User> getUsers() throws Exception
 	{
-		List<User> users = Arrays.asList(mapper.readValue(path.toFile(), User[].class));
-		return new ArrayList<User>(users);
+		String jsonStr = readFromEcncryptedFile();
+		ArrayList<User> listCar = mapper.readValue(jsonStr, new TypeReference<ArrayList<User>>(){});
+		return listCar;
+	}
+	
+	private String readFromEcncryptedFile() throws Exception 
+	{
+		String bs64Str = Files.readAllLines(path).get(0);
+		return AES.decrypt(bs64Str);
 	}
 	
 	public void setUsers(ArrayList<User> usersList) throws Exception
 	{
-		mapper.writeValue(path.toFile(), usersList);
+		String jsonStr = mapper.writeValueAsString(usersList);
+		writeToEncrytpedFile(jsonStr);
 	}
+	
+	private void writeToEncrytpedFile(String String) throws IOException 
+	{
+		String bs64String = AES.encrypt(String);
+		Files.write(path, bs64String.getBytes());
+	}
+
 }

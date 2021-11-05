@@ -5,7 +5,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Base64;
- 
+
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
  
@@ -47,14 +48,18 @@ public class AES {
         return null;
     }
  
-    public static String decrypt(String strToDecrypt) 
+    public static String decrypt(String strToDecrypt) throws Exception 
     {
         try
         {
             Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5PADDING");
             cipher.init(Cipher.DECRYPT_MODE, secretKey);
             return new String(cipher.doFinal(Base64.getDecoder().decode(strToDecrypt)));
-        } 
+        }
+        catch(BadPaddingException ex)
+        {
+        	throw new Exception("Ошибка во время дешифровки скорее всего неправильный ключ");
+        }
         catch (Exception e) 
         {
             System.out.println("Error while decrypting: " + e.toString());

@@ -12,6 +12,22 @@ public class DatabaseSystem
 	public DatabaseSystem() throws Exception
 	{
 		storage = new JsonFileStorage();
+	}
+	
+	public boolean isExistDatabse()
+	{
+		return storage.isExistDatabase();
+	}
+	
+	public void CreateDataBase(String key) throws Exception
+	{
+		storage.createDatabase(key);
+		users = storage.getUsers();
+	}
+	
+	public void setKey(String key) throws Exception
+	{
+		storage.setKey(key);
 		users = storage.getUsers();
 	}
 	
@@ -31,12 +47,5 @@ public class DatabaseSystem
 		storage.setUsers(users);
 	}
 	
-/*	public void changeUserParametrsByUsername(User user) 
-	{	
-		users.forEach(System.out::println);
-		User old = users.stream().filter(curUser -> user.getUsername().equals(curUser.getUsername())).findFirst().orElse(null);
-		int idex = users.indexOf(old);
-		users.set(idex, user);
-		users.forEach(System.out::println);
-	}*/
+
 }

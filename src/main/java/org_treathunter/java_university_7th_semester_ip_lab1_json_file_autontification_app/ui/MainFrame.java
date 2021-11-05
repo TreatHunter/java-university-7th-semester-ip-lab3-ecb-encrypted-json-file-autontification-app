@@ -31,7 +31,7 @@ public class MainFrame
 	
 	public MainFrame() throws Exception
 	{
-		db = new DatabaseSystem();
+
 		fr = new JFrame("Лабораторная 1");
 		fr.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		Container pane = fr.getContentPane();
@@ -193,9 +193,10 @@ public class MainFrame
 		
 		fr.setJMenuBar(menuBar);
 		fr.setSize(1280,720);
-		fr.setVisible(true);		
+		fr.setVisible(true);	
+		initDatabase();
 	}
-	
+
 	private JMenu createUsersMenu()
 	{
 		usersMenu = new JMenu("Пользователи");
@@ -382,5 +383,65 @@ public class MainFrame
 		
 		reference.add(aboutProgram);
 		return reference;
+	}
+
+	private void initDatabase() throws Exception 
+	{
+		db = new DatabaseSystem();
+		if(db.isExistDatabse())
+		{
+			DataBasePasswordDialog pswrdDlg = new DataBasePasswordDialog(fr);
+			pswrdDlg.setVisible(true);
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+            if(pswrdDlg.isLoginAttempt())
+            {
+            	db.setKey(pswrdDlg.getPassword());
+            }
+            else 
+            {
+            	System.exit(0);
+            }  
+			
+		}else
+		{
+			String newPassword = "";
+
+			while(newPassword.length() == 0)
+			{
+				DatabasePasswordSetDialog pswrdChngDlg = new DatabasePasswordSetDialog(fr);
+				pswrdChngDlg.setVisible(true);
+                if(!pswrdChngDlg.isLoginAttempt())
+                {
+                    System.exit(0);
+                }else
+                {
+                   	String password = pswrdChngDlg.getPassword();
+                   	String passwordConfirm = pswrdChngDlg.getPasswordConfirm();
+                   	if(!password.equals(passwordConfirm))
+                   	{
+                   		JOptionPane.showMessageDialog(fr,
+                                 "Пароли не совпадают",
+                                 "Пароли не совпадают",
+                                 JOptionPane.ERROR_MESSAGE);
+                   	}
+                   	else if(password.length() == 0)
+                   	{
+                   		JOptionPane.showMessageDialog(fr,
+                                 "Пароль не может быть пустым",
+                                 "Пароль не может быть пустым",
+                                 JOptionPane.ERROR_MESSAGE);            		
+                    }else
+                   	{
+                   		newPassword = password;
+                   	}
+                }
+			}
+			db.CreateDataBase(newPassword);
+		}
 	}
 }
